@@ -16,13 +16,23 @@ class ChirpController extends Controller
      */
     public function index(): View
     {
-        return view('chirps.index');
+        return view('chirps.index', [
+            'chirps' => Chirp::with('user')->latest()->get(),
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
+    {
+       //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'message' => 'required|string|max:255',
@@ -31,14 +41,6 @@ class ChirpController extends Controller
         $request->user()->chirps()->create($validated);
  
         return redirect(route('chirps.index'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        //
     }
 
     /**
