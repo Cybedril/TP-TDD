@@ -262,6 +262,30 @@ public function test_un_utilisateur_ne_peut_pas_creer_plus_de_10_chirps()
     $this->assertDatabaseCount('chirps', 10);
 }
 
+public function test_seuls_les_chirps_recents_sont_affiches()
+{
+    // Créer un utilisateur
+    $utilisateur = User::factory()->create();
+
+    // Créer des "chirps" avec des dates différentes
+    Chirp::factory()->create([
+        'user_id' => $utilisateur->id,
+        'created_at' => now()->subDays(2), // Chirp récent
+    ]);
+
+    Chirp::factory()->create([
+        'user_id' => $utilisateur->id,
+        'created_at' => now()->subDays(8), // Chirp ancien
+    ]);
+
+    // Effectuer une requête GET sur la page d'accueil
+    $reponse = $this->actingAs($utilisateur)->get('/');
+
+    // Vérifier que seul le "chirp" récent est affiché
+    $reponse->assertSee(now()->subDays(2)->toDateString());
+    $reponse->assertDontSee(now()->subDays(8)->toDateString());
+}
+
 
 
 
