@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Chirp;
 
+
 class ChirpTest extends TestCase
 {
     use RefreshDatabase;
@@ -64,5 +65,27 @@ public function test_un_chirp_ne_peut_pas_depasse_255_caracteres()
     // Vérifier qu'une erreur de validation a été ajoutée pour le champ 'content'
     $reponse->assertSessionHasErrors(['message']);
 }
+
+public function test_les_chirps_sont_affiches_sur_la_page_d_accueil()
+{
+    // Créer 3 chirps avec des messages spécifiques
+    Chirp::factory()->create(['message' => 'Test Chirp Message 1']);
+    Chirp::factory()->create(['message' => 'Test Chirp Message 2']);
+    Chirp::factory()->create(['message' => 'Test Chirp Message 3']);
+
+    // Faire une requête GET sur la page d'accueil
+    $response = $this->get('/');
+
+    // Afficher le contenu de la réponse pour vérification
+    $responseContent = $response->getContent();
+    echo $responseContent;
+
+    // Vérifier que chaque chirp est bien présent dans la réponse
+    $response->assertSee('Test Chirp Message 1');
+    $response->assertSee('Test Chirp Message 2');
+    $response->assertSee('Test Chirp Message 3');
+}
+
+
 
 }

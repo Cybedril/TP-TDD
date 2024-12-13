@@ -15,11 +15,11 @@ class ChirpController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index()
     {
-        return view('chirps.index', [
-            'chirps' => Chirp::with('user')->latest()->get(),
-        ]);
+
+    $chirps = Chirp::all();  // Récupérer tous les chirps
+    return view('welcome', compact('chirps'));  // Passer les chirps à la vue
     }
 
     /**
