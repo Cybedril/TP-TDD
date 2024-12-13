@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/chirps', [ChirpController::class, 'store'])->middleware('auth');
+Route::put('/chirps/{chirp}', [ChirpController::class, 'update'])->middleware('auth');
+
 
 Route::get('/', function () {
     return view('welcome');

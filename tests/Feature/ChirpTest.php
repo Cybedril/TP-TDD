@@ -86,6 +86,33 @@ public function test_les_chirps_sont_affiches_sur_la_page_d_accueil()
     $response->assertSee('Test Chirp Message 3');
 }
 
+public function test_un_utilisateur_peut_modifier_son_chirp()
+{
+    // Créer un utilisateur et un chirp
+    $utilisateur = User::factory()->create();
+    $chirp = Chirp::factory()->create([
+        'user_id' => $utilisateur->id,
+        'message' => 'Contenu initial',
+    ]);
+
+    // Authentifier l'utilisateur
+    $this->actingAs($utilisateur);
+
+    // Effectuer une requête PUT pour mettre à jour le chirp
+    $reponse = $this->put("/chirps/{$chirp->id}", [
+        'message' => 'Chirp modifié',
+    ]);
+
+    // Vérifier que la requête retourne le bon statut
+    $reponse->assertStatus(200);
+
+    // Vérifier que le contenu a été modifié dans la base de données
+    $this->assertDatabaseHas('chirps', [
+        'id' => $chirp->id,
+        'message' => 'Chirp modifié',
+    ]);
+}
+
 
 
 }
