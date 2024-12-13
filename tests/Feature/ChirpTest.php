@@ -187,6 +187,58 @@ public function test_un_utilisateur_ne_peut_pas_supprimer_le_chirp_d_un_autre_ut
     ]);
 }
 
+public function test_un_chirp_ne_peut_pas_etre_mis_a_jour_avec_un_contenu_vide()
+{
+    // Créer un utilisateur
+    $utilisateur = User::factory()->create();
+
+    // Créer un chirp associé à cet utilisateur
+    $chirp = Chirp::factory()->create(['user_id' => $utilisateur->id]);
+
+    // Se connecter en tant qu'utilisateur
+    $this->actingAs($utilisateur);
+
+    // Tenter de mettre à jour le chirp avec un contenu vide
+    $reponse = $this->put("/chirps/{$chirp->id}", [
+        'message' => '',
+    ]);
+
+    // Vérifier que la validation échoue
+    $reponse->assertSessionHasErrors(['message']);
+
+    // Vérifier que le contenu du chirp dans la base n'a pas changé
+    $this->assertDatabaseHas('chirps', [
+        'id' => $chirp->id,
+        'message' => $chirp->message, // Contenu initial
+    ]);
+}
+
+public function test_un_chirp_ne_peut_pas_etre_mis_a_jour_avec_un_contenu_trop_long()
+{
+    // Créer un utilisateur
+    $utilisateur = User::factory()->create();
+
+    // Créer un chirp associé à cet utilisateur
+    $chirp = Chirp::factory()->create(['user_id' => $utilisateur->id]);
+
+    // Se connecter en tant qu'utilisateur
+    $this->actingAs($utilisateur);
+
+    // Tenter de mettre à jour le chirp avec un contenu de plus de 255 caractères
+    $reponse = $this->put("/chirps/{$chirp->id}", [
+        'message' => str_repeat('a', 256),
+    ]);
+
+    // Vérifier que la validation échoue
+    $reponse->assertSessionHasErrors(['message']);
+
+    // Vérifier que le contenu du chirp dans la base n'a pas changé
+    $this->assertDatabaseHas('chirps', [
+        'id' => $chirp->id,
+        'message' => $chirp->message, // Contenu initial
+    ]);
+}
+
 
 
 

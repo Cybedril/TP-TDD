@@ -73,13 +73,15 @@ class ChirpController extends Controller
     public function update(Request $request, Chirp $chirp)
     {
         if ($chirp->user_id !== auth()->id()) {
-            abort(403); // Empêche l'accès si ce n'est pas le propriétaire
+            abort(403); // Vérification des permissions
         }
     
+        // Règles de validation
         $request->validate([
             'message' => 'required|string|max:255',
         ]);
     
+        // Mise à jour du chirp
         $chirp->update($request->only('message'));
     
         return response()->json($chirp, 200);
