@@ -24,5 +24,12 @@ class Chirp extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // Règles de validation pour le modèle Chirp
+    public static function rules()
+    {
+        return [
+            'message' => 'required|max:255',
+        ];
+    }
     
 }
