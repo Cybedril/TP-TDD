@@ -239,6 +239,29 @@ public function test_un_chirp_ne_peut_pas_etre_mis_a_jour_avec_un_contenu_trop_l
     ]);
 }
 
+public function test_un_utilisateur_ne_peut_pas_creer_plus_de_10_chirps()
+{
+    // Créer un utilisateur
+    $utilisateur = User::factory()->create();
+
+    // Créer 10 chirps pour cet utilisateur
+    Chirp::factory()->count(10)->create(['user_id' => $utilisateur->id]);
+
+    // Se connecter en tant qu'utilisateur
+    $this->actingAs($utilisateur);
+
+    // Tenter de créer un 11ᵉ chirp
+    $reponse = $this->post('/chirps', [
+        'message' => 'Un chirp supplémentaire',
+    ]);
+
+    // Vérifier que la réponse est une erreur 403
+    $reponse->assertStatus(403);
+
+    // Vérifier que le 11ᵉ chirp n'a pas été créé
+    $this->assertDatabaseCount('chirps', 10);
+}
+
 
 
 

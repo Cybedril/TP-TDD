@@ -35,16 +35,20 @@ class ChirpController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'message' => 'required|string|max:255',
-        ]);
+        // Vérifier si l'utilisateur a atteint la limite de 10 chirps
+    if (auth()->user()->chirps()->count() >= 10) {
+        return response()->json(['message' => 'Limite de 10 chirps atteinte.'], 403);
+    }
 
-        Chirp::create([
-            'user_id' => auth()->id(),
-            'message' => $request->message,
-        ]);
+    // Règles de validation
+    $request->validate([
+        'message' => 'required|string|max:255',
+    ]);
 
-        return response()->json(['message' => 'Chirp créé avec succès!'], 201);
+    // Créer un chirp
+    $chirp = auth()->user()->chirps()->create($request->only('message'));
+
+    return response()->json($chirp, 201);
     }
 
     /**
