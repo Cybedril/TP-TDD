@@ -286,6 +286,39 @@ public function test_seuls_les_chirps_recents_sont_affiches()
     $reponse->assertDontSee(now()->subDays(8)->toDateString());
 }
 
+public function test_un_utilisateur_peut_liker_un_chirp()
+{
+    $user = User::factory()->create();
+    $chirp = Chirp::factory()->create();
+
+    $this->actingAs($user);
+
+    $response = $this->post("/chirps/{$chirp->id}/like");
+
+    $response->assertStatus(200);
+    $this->assertDatabaseHas('likes', [
+        'user_id' => $user->id,
+        'chirp_id' => $chirp->id,
+    ]);
+}
+
+public function test_un_utilisateur_ne_peut_pas_liker_un_chirp_deux_fois()
+{
+    $user = User::factory()->create();
+    $chirp = Chirp::factory()->create();
+
+    $this->actingAs($user);
+
+    // Premier like
+    $this->post("/chirps/{$chirp->id}/like");
+
+    // Second like (doit échouer)
+    $response = $this->post("/chirps/{$chirp->id}/like");
+
+    $response->assertStatus(400);
+    $this->assertDatabaseCount('likes', 1); // Vérifie qu'il n'y a qu'un seul like
+}
+
 
 
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/chirps', [ChirpController::class, 'store'])->middleware('auth');
 Route::put('/chirps/{chirp}', [ChirpController::class, 'update'])->middleware('auth');
 Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy'])->middleware('auth');
+Route::post('/chirps/{chirp}/like', [ChirpController::class, 'like'])->name('chirps.like');
 
 
 Route::get('/', function () {

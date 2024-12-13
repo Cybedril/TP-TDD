@@ -32,5 +32,11 @@ class Chirp extends Model
             'message' => 'required|max:255',
         ];
     }
+
+    public function likes()
+{
+    return $this->belongsToMany(User::class, 'likes');
+}
+
     
 }

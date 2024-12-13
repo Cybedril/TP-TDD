@@ -104,4 +104,20 @@ class ChirpController extends Controller
     
         return response()->json(['message' => 'Chirp supprimé avec succès'], 200);
     }
+
+    public function like(Chirp $chirp)
+{
+    $user = auth()->user();
+
+    // Vérifie si l'utilisateur a déjà liké
+    if ($chirp->likes()->where('user_id', $user->id)->exists()) {
+        return response()->json(['message' => 'Vous avez déjà liké ce chirp.'], 400);
+    }
+
+    // Ajoute le like
+    $chirp->likes()->attach($user->id);
+
+    return response()->json(['message' => 'Chirp liké avec succès.']);
+}
+
 }
