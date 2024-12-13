@@ -113,6 +113,30 @@ public function test_un_utilisateur_peut_modifier_son_chirp()
     ]);
 }
 
+public function test_un_utilisateur_peut_supprimer_son_chirp()
+{
+    // Crée un utilisateur
+    $utilisateur = User::factory()->create();
+
+    // Crée un "chirp" associé à l'utilisateur
+    $chirp = Chirp::factory()->create(['user_id' => $utilisateur->id]);
+
+    // Connecte l'utilisateur
+    $this->actingAs($utilisateur);
+
+    // Envoie une requête DELETE pour supprimer le "chirp"
+    $reponse = $this->delete("/chirps/{$chirp->id}");
+
+    // Vérifie que la requête retourne un statut 200 (succès)
+    $reponse->assertStatus(200);
+
+    // Vérifie que le "chirp" n'existe plus dans la base de données
+    $this->assertDatabaseMissing('chirps', [
+        'id' => $chirp->id,
+    ]);
+}
+
+
 
 
 }

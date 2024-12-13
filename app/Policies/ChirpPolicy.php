@@ -45,7 +45,8 @@ class ChirpPolicy
      */
     public function delete(User $user, Chirp $chirp): bool
     {
-        return $this->update($user, $chirp);
+        // Autorise uniquement le propriétaire du chirp à le supprimer
+    return $user->id === $chirp->user_id;
     }
 
     /**

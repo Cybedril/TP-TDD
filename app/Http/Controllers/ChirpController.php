@@ -91,10 +91,12 @@ class ChirpController extends Controller
      */
     public function destroy(Chirp $chirp): RedirectResponse
     {
-        Gate::authorize('delete', $chirp);
- 
-        $chirp->delete();
- 
-        return redirect(route('chirps.index'));
+        // Vérifie que l'utilisateur est bien le propriétaire du chirp
+    $this->authorize('delete', $chirp);
+
+    // Supprime le chirp
+    $chirp->delete();
+
+    return response()->json(['message' => 'Chirp supprimé avec succès.'], 200);
     }
 }

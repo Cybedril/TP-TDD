@@ -13,7 +13,7 @@ class ChirpFactory extends Factory
     {
         return [
             'message' => $this->faker->sentence,  // Créer un contenu aléatoire
-            'user_id' => \App\Models\User::factory(),  // Associer un utilisateur existant
+            'user_id' => User::factory(),  // Associer un utilisateur existant
         ];
     }
 }
