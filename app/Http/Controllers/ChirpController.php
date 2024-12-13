@@ -33,15 +33,18 @@ class ChirpController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'message' => 'required|string|max:255',
         ]);
- 
-        $request->user()->chirps()->create($validated);
- 
-        return redirect(route('chirps.index'));
+
+        Chirp::create([
+            'user_id' => auth()->id(),
+            'message' => $request->message,
+        ]);
+
+        return response()->json(['message' => 'Chirp créé avec succès!'], 201);
     }
 
     /**

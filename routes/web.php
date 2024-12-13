@@ -3,6 +3,9 @@ use App\Http\Controllers\ChirpController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+
+Route::post('/chirps', [ChirpController::class, 'store'])->middleware('auth');
+
 Route::get('/', function () {
     return view('welcome');
 });
