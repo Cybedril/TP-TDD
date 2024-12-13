@@ -136,6 +136,57 @@ public function test_un_utilisateur_peut_supprimer_son_chirp()
     ]);
 }
 
+public function test_un_utilisateur_ne_peut_pas_modifier_le_chirp_d_un_autre_utilisateur()
+{
+    // Créer deux utilisateurs
+    $utilisateur1 = User::factory()->create();
+    $utilisateur2 = User::factory()->create();
+
+    // Créer un chirp pour l'utilisateur 1
+    $chirp = Chirp::factory()->create(['user_id' => $utilisateur1->id]);
+
+    // Se connecter en tant qu'utilisateur 2
+    $this->actingAs($utilisateur2);
+
+    // Essayer de modifier le chirp de l'utilisateur 1
+    $reponse = $this->put("/chirps/{$chirp->id}", [
+        'message' => 'Tentative de modification',
+    ]);
+
+    // Vérifier que l'utilisateur n'a pas la permission (statut 403)
+    $reponse->assertStatus(403);
+
+    // Vérifier que le message du chirp n'a pas changé
+    $this->assertDatabaseHas('chirps', [
+        'id' => $chirp->id,
+        'message' => $chirp->message, // Le message original
+    ]);
+}
+
+public function test_un_utilisateur_ne_peut_pas_supprimer_le_chirp_d_un_autre_utilisateur()
+{
+    // Créer deux utilisateurs
+    $utilisateur1 = User::factory()->create();
+    $utilisateur2 = User::factory()->create();
+
+    // Créer un chirp pour l'utilisateur 1
+    $chirp = Chirp::factory()->create(['user_id' => $utilisateur1->id]);
+
+    // Se connecter en tant qu'utilisateur 2
+    $this->actingAs($utilisateur2);
+
+    // Essayer de supprimer le chirp de l'utilisateur 1
+    $reponse = $this->delete("/chirps/{$chirp->id}");
+
+    // Vérifier que l'utilisateur n'a pas la permission (statut 403)
+    $reponse->assertStatus(403);
+
+    // Vérifier que le chirp existe toujours dans la base de données
+    $this->assertDatabaseHas('chirps', [
+        'id' => $chirp->id,
+    ]);
+}
+
 
 
 

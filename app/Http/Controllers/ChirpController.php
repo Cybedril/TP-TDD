@@ -72,18 +72,17 @@ class ChirpController extends Controller
      */
     public function update(Request $request, Chirp $chirp)
     {
-        // Vérifier si l'utilisateur est propriétaire du chirp
-    $this->authorize('update', $chirp);
-
-    // Valider les données
-    $validated = $request->validate([
-        'content' => 'required|string|max:255',
-    ]);
-
-    // Mettre à jour le chirp
-    $chirp->update($validated);
-
-    return response()->json(['message' => 'Chirp mis à jour avec succès!'], 200);
+        if ($chirp->user_id !== auth()->id()) {
+            abort(403); // Empêche l'accès si ce n'est pas le propriétaire
+        }
+    
+        $request->validate([
+            'message' => 'required|string|max:255',
+        ]);
+    
+        $chirp->update($request->only('message'));
+    
+        return response()->json($chirp, 200);
     }
 
     /**
@@ -91,12 +90,12 @@ class ChirpController extends Controller
      */
     public function destroy(Chirp $chirp): RedirectResponse
     {
-        // Vérifie que l'utilisateur est bien le propriétaire du chirp
-    $this->authorize('delete', $chirp);
-
-    // Supprime le chirp
-    $chirp->delete();
-
-    return response()->json(['message' => 'Chirp supprimé avec succès.'], 200);
+        if ($chirp->user_id !== auth()->id()) {
+            abort(403); // Empêche l'accès si ce n'est pas le propriétaire
+        }
+    
+        $chirp->delete();
+    
+        return response()->json(['message' => 'Chirp supprimé avec succès'], 200);
     }
 }
